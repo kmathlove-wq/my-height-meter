@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 키는 얼마큼 클까?</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-claude.svg" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #667eea;
+      border: 2px solid rgba(255, 255, 255, 0.55);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      transform: translateY(-2px);
+      background: white;
+      outline: none;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .emoji {
+      font-size: 56px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #3d3d3d;
+      margin-bottom: 32px;
+      line-height: 1.3;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 16px;
+      color: #333;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: #667eea;
+    }
+
+    .gender-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .gender-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 18px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #555;
+      font-weight: 600;
+    }
+
+    .gender-btn:hover {
+      border-color: #667eea;
+      background: #f0f0ff;
+    }
+
+    .gender-btn.selected {
+      border-color: #667eea;
+      background: #667eea;
+      color: white;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* 로딩 */
+    .loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .loading.visible {
+      display: flex;
+    }
+
+    .drum-text {
+      font-size: 28px;
+      font-weight: 800;
+      color: #667eea;
+      letter-spacing: 2px;
+    }
+
+    .dots {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      background: #764ba2;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.15s; }
+    .dot:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+      from { transform: translateY(0); opacity: 0.5; }
+      to   { transform: translateY(-12px); opacity: 1; }
+    }
+
+    /* 결과 */
+    .result {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .result.visible {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-emoji {
+      font-size: 64px;
+    }
+
+    .result-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: #3d3d3d;
+      line-height: 1.5;
+    }
+
+    .result-height {
+      font-size: 52px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .result-message {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .retry-btn {
+      margin-top: 8px;
+      padding: 10px 28px;
+      background: #f0f0ff;
+      color: #667eea;
+      border: 2px solid #667eea;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .retry-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-link" href="index.html">돌아가기</a>
+
+  <div class="card">
+    <!-- 입력 폼 -->
+    <div id="form-section">
+      <div class="emoji">📏</div>
+      <h1>내 키는 얼마큼 클까?</h1>
+
+      <div class="form-group">
+        <label>👩 엄마 키 (cm)</label>
+        <input type="number" id="mom" placeholder="예: 160" min="100" max="250" />
+      </div>
+
+      <div class="form-group">
+        <label>👨 아빠 키 (cm)</label>
+        <input type="number" id="dad" placeholder="예: 175" min="100" max="250" />
+      </div>
+
+      <div class="form-group">
+        <label>성별</label>
+        <div class="gender-group">
+          <button class="gender-btn" id="btn-son"  onclick="selectGender('son')">👦 아들</button>
+          <button class="gender-btn" id="btn-daughter" onclick="selectGender('daughter')">👧 딸</button>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="calculate()">예측하기 ✨</button>
+    </div>
+
+    <!-- 로딩 -->
+    <div class="loading" id="loading-section">
+      <div class="drum-text" id="drum-text">두구</div>
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- 결과 -->
+    <div class="result" id="result-section">
+      <div class="result-emoji">🎉</div>
+      <div class="result-text">내 키는</div>
+      <div class="result-height" id="result-height">---</div>
+      <div class="result-message" id="result-message">까지 큽니다!</div>
+      <button class="retry-btn" onclick="reset()">다시 예측하기</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedGender = null;
+
+    function selectGender(gender) {
+      selectedGender = gender;
+      document.getElementById('btn-son').classList.toggle('selected', gender === 'son');
+      document.getElementById('btn-daughter').classList.toggle('selected', gender === 'daughter');
+    }
+
+    function calculate() {
+      const mom = parseFloat(document.getElementById('mom').value);
+      const dad = parseFloat(document.getElementById('dad').value);
+
+      if (!mom || !dad) {
+        alert('엄마와 아빠의 키를 입력해주세요! 😊');
+        return;
+      }
+      if (!selectedGender) {
+        alert('성별을 선택해주세요! 😊');
+        return;
+      }
+
+      const base = (mom + dad) / 2;
+      const predicted = selectedGender === 'son' ? base + 10 : base - 10;
+
+      // 폼 숨기기, 로딩 보여주기
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('loading-section').classList.add('visible');
+
+      // 두구두구두구 애니메이션
+      const words = ['두구', '두구두구', '두구두구두구', '두구두구두구두구', '두구두구두구두구두구'];
+      let i = 0;
+      const drumEl = document.getElementById('drum-text');
+      const drumInterval = setInterval(() => {
+        drumEl.textContent = words[i % words.length];
+        i++;
+      }, 350);
+
+      // 2.5초 후 결과 표시
+      setTimeout(() => {
+        clearInterval(drumInterval);
+        document.getElementById('loading-section').classList.remove('visible');
+
+        const genderLabel = selectedGender === 'son' ? '👦' : '👧';
+        document.getElementById('result-height').textContent = predicted.toFixed(1) + ' cm';
+        document.getElementById('result-message').textContent =
+          `${genderLabel} 까지 큽니다!`;
+
+        document.getElementById('result-section').classList.add('visible');
+      }, 2500);
+    }
+
+    function reset() {
+      selectedGender = null;
+      document.getElementById('mom').value = '';
+      document.getElementById('dad').value = '';
+      document.getElementById('btn-son').classList.remove('selected');
+      document.getElementById('btn-daughter').classList.remove('selected');
+      document.getElementById('result-section').classList.remove('visible');
+      document.getElementById('form-section').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

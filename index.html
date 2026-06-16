@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>어떤 게 더 좋은가요?</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-home.svg">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: #18202b;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255, 209, 102, 0.45), transparent 28%),
+        radial-gradient(circle at 82% 20%, rgba(106, 169, 255, 0.38), transparent 30%),
+        linear-gradient(135deg, #f8fbff 0%, #fff4ef 100%);
+    }
+
+    main {
+      width: min(760px, 100%);
+      text-align: center;
+    }
+
+    .question {
+      margin-bottom: 34px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(36px, 7vw, 72px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: #5f6b7a;
+      font-size: clamp(16px, 2.4vw, 20px);
+      line-height: 1.6;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    a {
+      display: grid;
+      align-content: center;
+      min-height: 170px;
+      padding: 26px;
+      border: 2px solid rgba(24, 32, 43, 0.1);
+      border-radius: 8px;
+      color: #18202b;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 18px 45px rgba(31, 44, 63, 0.14);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    a:hover,
+    a:focus-visible {
+      transform: translateY(-4px);
+      border-color: #6aa9ff;
+      box-shadow: 0 24px 60px rgba(31, 44, 63, 0.2);
+      outline: none;
+    }
+
+    .name {
+      display: block;
+      margin-bottom: 8px;
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 900;
+    }
+
+    .made-by {
+      display: block;
+      color: #647286;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 620px) {
+      body {
+        padding: 18px;
+      }
+
+      .choices {
+        grid-template-columns: 1fr;
+      }
+
+      a {
+        min-height: 132px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="question">
+      <h1>어떤 게 더 좋은가요?</h1>
+      <p>보고 싶은 버전을 골라주세요.</p>
+    </section>
+
+    <section class="choices" aria-label="버전 선택">
+      <a href="codex.html">
+        <span class="name">codex</span>
+        <span class="made-by">챗GPT</span>
+      </a>
+
+      <a href="claude%20code.html">
+        <span class="name">claude code</span>
+        <span class="made-by">클로드</span>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

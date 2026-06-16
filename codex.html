@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 키는 얼마큼 클까?</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-codex.svg">
+  <style>
+    :root {
+      --ink: #19202a;
+      --muted: #697386;
+      --line: #d9e1ea;
+      --paper: #fbfdff;
+      --mint: #6cc9a7;
+      --coral: #ff7c6e;
+      --sun: #ffd166;
+      --sky: #6aa9ff;
+      --shadow: 0 18px 50px rgba(28, 41, 57, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(25, 32, 42, 0.05) 1px, transparent 1px) 0 0 / 36px 36px,
+        linear-gradient(180deg, #f7fbff 0%, #fff7ef 100%);
+    }
+
+    .back-link {
+      position: fixed;
+      left: 18px;
+      top: 18px;
+      z-index: 5;
+      display: inline-grid;
+      place-items: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border: 2px solid rgba(25, 32, 42, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 10px 28px rgba(28, 41, 57, 0.12);
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      transform: translateY(-1px);
+      border-color: var(--sky);
+      outline: none;
+    }
+
+    main {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(300px, 1.05fr);
+      gap: 32px;
+      align-items: center;
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 44px 0;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 560px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .height-scene {
+      position: relative;
+      width: min(390px, 100%);
+      height: 520px;
+      border-bottom: 8px solid #2f3c4d;
+    }
+
+    .ruler {
+      position: absolute;
+      left: 18px;
+      top: 8px;
+      bottom: 0;
+      width: 72px;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          #ffffff 0 15px,
+          #e8eef6 15px 16px
+        );
+      border: 3px solid #253142;
+      border-bottom: 0;
+      border-radius: 8px 8px 0 0;
+      box-shadow: var(--shadow);
+    }
+
+    .ruler::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, transparent 0 9%, #253142 9% 10%, transparent 10% 19%, #253142 19% 20%, transparent 20% 29%, #253142 29% 30%, transparent 30% 39%, #253142 39% 40%, transparent 40% 49%, #253142 49% 50%, transparent 50% 59%, #253142 59% 60%, transparent 60% 69%, #253142 69% 70%, transparent 70% 79%, #253142 79% 80%, transparent 80% 89%, #253142 89% 90%, transparent 90%);
+      background-size: 42px 100%;
+      background-repeat: no-repeat;
+    }
+
+    .ruler-label {
+      position: absolute;
+      right: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #344054;
+    }
+
+    .ruler-label:nth-child(1) { top: 8%; }
+    .ruler-label:nth-child(2) { top: 28%; }
+    .ruler-label:nth-child(3) { top: 48%; }
+    .ruler-label:nth-child(4) { top: 68%; }
+    .ruler-label:nth-child(5) { top: 88%; }
+
+    .kid {
+      position: absolute;
+      right: 18px;
+      bottom: 0;
+      width: 178px;
+      height: 370px;
+    }
+
+    .head {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 102px;
+      height: 102px;
+      transform: translateX(-50%);
+      background: #ffd7b5;
+      border: 4px solid #243042;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .hair {
+      position: absolute;
+      left: 28px;
+      top: -13px;
+      width: 74px;
+      height: 45px;
+      background: #26313f;
+      border-radius: 50% 50% 36% 36%;
+      transform: rotate(5deg);
+    }
+
+    .eye {
+      position: absolute;
+      top: 48px;
+      width: 9px;
+      height: 13px;
+      background: #243042;
+      border-radius: 50%;
+    }
+
+    .eye.left { left: 31px; }
+    .eye.right { right: 31px; }
+
+    .smile {
+      position: absolute;
+      left: 39px;
+      top: 69px;
+      width: 25px;
+      height: 13px;
+      border-bottom: 4px solid #243042;
+      border-radius: 0 0 20px 20px;
+    }
+
+    .body {
+      position: absolute;
+      left: 50%;
+      top: 92px;
+      width: 116px;
+      height: 164px;
+      transform: translateX(-50%);
+      background: var(--sky);
+      border: 4px solid #243042;
+      border-radius: 34px 34px 18px 18px;
+    }
+
+    .arm,
+    .leg {
+      position: absolute;
+      background: #ffd7b5;
+      border: 4px solid #243042;
+    }
+
+    .arm {
+      top: 122px;
+      width: 38px;
+      height: 126px;
+      border-radius: 22px;
+    }
+
+    .arm.left {
+      left: 4px;
+      transform: rotate(16deg);
+    }
+
+    .arm.right {
+      right: 4px;
+      transform: rotate(-16deg);
+    }
+
+    .leg {
+      bottom: 12px;
+      width: 44px;
+      height: 126px;
+      border-radius: 20px 20px 14px 14px;
+      background: #4d5c70;
+    }
+
+    .leg.left { left: 42px; }
+    .leg.right { right: 42px; }
+
+    .shoe {
+      position: absolute;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      background: #253142;
+      border-radius: 18px 18px 6px 6px;
+    }
+
+    .shoe.left { left: 28px; }
+    .shoe.right { right: 28px; }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(217, 225, 234, 0.9);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 4vw, 42px);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0 0 30px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      height: 56px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 0 16px;
+      font-size: 18px;
+      color: var(--ink);
+      background: var(--paper);
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    input:focus {
+      border-color: var(--sky);
+      box-shadow: 0 0 0 4px rgba(106, 169, 255, 0.18);
+    }
+
+    .gender-group {
+      display: grid;
+      gap: 10px;
+      font-weight: 800;
+    }
+
+    .gender-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .gender-option {
+      position: relative;
+      display: block;
+      font-weight: 900;
+    }
+
+    .gender-option input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .gender-option span {
+      display: grid;
+      place-items: center;
+      min-height: 54px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .gender-option input:checked + span {
+      border-color: var(--coral);
+      background: #fff1ef;
+      box-shadow: 0 0 0 4px rgba(255, 124, 110, 0.16);
+    }
+
+    button {
+      height: 58px;
+      border: 0;
+      border-radius: 8px;
+      background: #243042;
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    button:hover {
+      background: #111827;
+      transform: translateY(-1px);
+    }
+
+    .result {
+      display: none;
+      margin-top: 24px;
+      padding: 18px;
+      border: 2px solid rgba(108, 201, 167, 0.65);
+      border-radius: 8px;
+      background: #effcf7;
+      font-size: 22px;
+      line-height: 1.45;
+      font-weight: 900;
+    }
+
+    .result.show {
+      display: block;
+      animation: pop 260ms ease both;
+    }
+
+    .note {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(13, 18, 27, 0.48);
+      backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+
+    .loading.show {
+      display: grid;
+    }
+
+    .loading-box {
+      width: min(360px, 100%);
+      border-radius: 8px;
+      background: white;
+      padding: 30px 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .drum {
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      gap: 8px;
+      height: 48px;
+      margin-bottom: 18px;
+    }
+
+    .drum span {
+      width: 14px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--coral);
+      animation: bounce 520ms ease-in-out infinite;
+    }
+
+    .drum span:nth-child(2) {
+      background: var(--sun);
+      animation-delay: 90ms;
+    }
+
+    .drum span:nth-child(3) {
+      background: var(--mint);
+      animation-delay: 180ms;
+    }
+
+    .loading-text {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: scaleY(0.72); }
+      50% { transform: scaleY(1.35); }
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 820px) {
+      main {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 24px 0;
+      }
+
+      .stage {
+        order: 2;
+        min-height: 360px;
+        padding-top: 0;
+      }
+
+      .height-scene {
+        height: 340px;
+      }
+
+      .kid {
+        width: 128px;
+        height: 265px;
+      }
+
+      .head {
+        width: 76px;
+        height: 76px;
+      }
+
+      .hair {
+        left: 22px;
+        width: 52px;
+        height: 34px;
+      }
+
+      .eye {
+        top: 36px;
+        width: 7px;
+        height: 10px;
+      }
+
+      .eye.left { left: 23px; }
+      .eye.right { right: 23px; }
+
+      .smile {
+        left: 29px;
+        top: 52px;
+        width: 18px;
+        height: 10px;
+      }
+
+      .body {
+        top: 68px;
+        width: 86px;
+        height: 118px;
+      }
+
+      .arm {
+        top: 90px;
+        width: 30px;
+        height: 88px;
+      }
+
+      .leg {
+        width: 33px;
+        height: 88px;
+      }
+
+      .leg.left { left: 30px; }
+      .leg.right { right: 30px; }
+
+      .shoe {
+        width: 47px;
+        height: 20px;
+      }
+
+      .shoe.left { left: 21px; }
+      .shoe.right { right: 21px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="back-link" href="index.html">돌아가기</a>
+
+  <main>
+    <section class="stage" aria-hidden="true">
+      <div class="height-scene">
+        <div class="ruler">
+          <span class="ruler-label">190</span>
+          <span class="ruler-label">170</span>
+          <span class="ruler-label">150</span>
+          <span class="ruler-label">130</span>
+          <span class="ruler-label">110</span>
+        </div>
+        <div class="kid">
+          <div class="head">
+            <div class="hair"></div>
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="smile"></div>
+          </div>
+          <div class="body"></div>
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+          <div class="leg left"></div>
+          <div class="leg right"></div>
+          <div class="shoe left"></div>
+          <div class="shoe right"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h1>내 키는 얼마큼 클까?</h1>
+      <p class="subtitle">엄마 키와 아빠 키를 입력하면 예상 키를 계산해 볼 수 있어요.</p>
+
+      <form id="heightForm">
+        <label for="momHeight">
+          엄마 키
+          <input id="momHeight" type="number" inputmode="decimal" min="120" max="220" step="0.1" placeholder="예: 160" required>
+        </label>
+
+        <label for="dadHeight">
+          아빠 키
+          <input id="dadHeight" type="number" inputmode="decimal" min="120" max="230" step="0.1" placeholder="예: 175" required>
+        </label>
+
+        <div class="gender-group">
+          나는
+          <div class="gender-options">
+            <label class="gender-option">
+              <input type="radio" name="gender" value="daughter" checked>
+              <span>딸</span>
+            </label>
+            <label class="gender-option">
+              <input type="radio" name="gender" value="son">
+              <span>아들</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit">내 키 계산하기</button>
+      </form>
+
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+      <p class="note">재미로 보는 계산기예요. 실제 키는 영양, 수면, 운동, 건강 상태 등 여러 요인의 영향을 받아요.</p>
+    </section>
+  </main>
+
+  <div id="loading" class="loading" aria-hidden="true">
+    <div class="loading-box">
+      <div class="drum" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <p class="loading-text">두구두구두구...</p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.querySelector("#heightForm");
+    const momHeightInput = document.querySelector("#momHeight");
+    const dadHeightInput = document.querySelector("#dadHeight");
+    const loading = document.querySelector("#loading");
+    const result = document.querySelector("#result");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const momHeight = Number(momHeightInput.value);
+      const dadHeight = Number(dadHeightInput.value);
+
+      if (!Number.isFinite(momHeight) || !Number.isFinite(dadHeight)) {
+        return;
+      }
+
+      result.classList.remove("show");
+      loading.classList.add("show");
+      loading.setAttribute("aria-hidden", "false");
+
+      window.setTimeout(() => {
+        const gender = new FormData(form).get("gender");
+        const genderAdjustment = gender === "son" ? 10 : -10;
+        const predictedHeight = (((momHeight + dadHeight) / 2) + genderAdjustment).toFixed(1);
+
+        loading.classList.remove("show");
+        loading.setAttribute("aria-hidden", "true");
+        result.textContent = `내 키는 ${predictedHeight}cm까지 큽니다!`;
+        result.classList.add("show");
+      }, 1800);
+    });
+  </script>
+</body>
+</html>
